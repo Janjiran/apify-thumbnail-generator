@@ -1,20 +1,71 @@
-// Apify SDK - toolkit for building Apify Actors (Read more at https://docs.apify.com/sdk/js/)
-import { Actor } from 'apify';
-// Crawlee - web scraping and browser automation library (Read more at https://crawlee.dev)
-// import { CheerioCrawler } from 'crawlee';
+import { execSync } from 'node:child_process'
+import fs from 'node:fs'
 
-// this is ESM project, and as such, it requires you to specify extensions in your relative imports
-// read more about this here: https://nodejs.org/docs/latest-v18.x/api/esm.html#mandatory-file-extensions
-// note that we need to use `.js` even when inside TS files
-// import { router } from './routes.js';
+import { Actor } from 'apify'
 
-// The init() call configures the Actor for its environment. It's recommended to start every Actor with an init()
-await Actor.init();
+import type { Input } from './types.js'
+import { getMimeType } from './utils.js'
 
-console.log('Hello from the Actor!');
-/**
- * Actor code
- */
+const DEFAULT_TIMESTAMP = 10
+const DEFAULT_OUTPUT_FORMAT = 'png'
+const DEFAULT_QUALITY = '1'
 
-// Gracefully exit the Actor process. It's recommended to quit all Actors with an exit()
-await Actor.exit();
+await Actor.init()
+
+const input = await Actor.getInput<Input>()
+
+if (!input) {
+    throw new Error('No input provided')
+}
+
+const files = Array.isArray(input.videoFile) ? input.videoFile : [input.videoFile]
+const outputFormat = input.outputFormat ?? DEFAULT_OUTPUT_FORMAT
+const quality = input.quality ?? DEFAULT_QUALITY
+const inputTimestamp = input.timestamp ?? DEFAULT_TIMESTAMP
+
+for (const [index, fileUrl] of files.entries()) {
+
+    try {
+        const startTime = performance.now()
+        const filename = `thumbnail-${index}.${outputFormat}`
+
+        console.log(`⚡️ Creating thumbnail for ${fileUrl} with name: ${filename}`)
+
+        const durationOutput = execSync(`ffprobe -i "${fileUrl}" -show_entries format=duration -v error -of csv="p=0"`, { encoding: 'utf-8' })
+
+        const videoLengthSeconds = Number.parseFloat(durationOutput)
+        console.log(`🎬 Video duration: ${videoLengthSeconds}s`)
+
+        let timestamp = inputTimestamp
+
+        if (videoLengthSeconds < timestamp) {
+            console.warn(`⚠️ Video duration is less than timestamp. Video duration: ${videoLengthSeconds.toFixed(2)}s, timestamp: ${timestamp}s.\nUsing the last second of the video`)
+            timestamp = videoLengthSeconds - 1
+        }
+        
+        execSync(`ffmpeg -hide_banner -loglevel error -y -ss ${timestamp} -i "${fileUrl}" -frames:v 1 -q:v ${quality} "${filename}"`, { encoding: 'utf-8' })
+        const imageBuffer = fs.readFileSync(filename)
+
+        const mimeType = getMimeType(outputFormat)
+        await Actor.setValue(`thumbnail-${index}`, imageBuffer, { contentType: mimeType })
+
+        const endTime = performance.now()
+        console.log(`✅ Thumbnail created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`)
+
+        await Actor.pushData({
+            videoUrl: fileUrl,
+            timestamp,
+            outputFormat,
+            quality,
+            filename,
+            mimeType,
+        })
+    } catch (error) {
+        console.error('❌ Failed to create thumbnail for', fileUrl)
+        console.error(error)
+        continue
+    }
+    
+}
+
+await Actor.exit()

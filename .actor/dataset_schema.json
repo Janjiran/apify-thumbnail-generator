@@ -1,0 +1,22 @@
+{
+    "actorSpecification": 1,
+    "fields": {},
+    "views": {
+        "overview": {
+            "title": "Thumbnails generated",
+            "transformation": {
+                "fields": [
+                    "videoUrl",
+                    "timestamp",
+                    "outputFormat",
+                    "quality",
+                    "filename",
+                    "mimeType"
+                ]
+            },
+            "display": {
+                "component": "table"
+            }
+        }
+    }
+}

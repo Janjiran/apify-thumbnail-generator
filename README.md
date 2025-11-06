@@ -1,67 +1,41 @@
-## Empty TypeScript template
+### Thumbnail Generator
 
-<!-- This is an Apify template readme -->
+Generate clean, high‑quality thumbnails from videos at a specific timestamp. Feed it one or many video files or URLs, pick the output format (PNG or JPG), set the quality, and the Actor will produce image thumbnails and store them in the default key‑value store.
 
-Start a new [web scraping](https://apify.com/web-scraping) project quickly and easily in TypeScript (Node.js) with our empty project template. It provides a basic structure for the Actor with [Apify SDK](https://docs.apify.com/sdk/js/) and allows you to easily add your own functionality.
+Inspired by the Apify idea: [Generate thumbnail from video](https://apify.com/ideas/generate-thumbnail-from-video-8908cb34).
 
-## Included features
+## Features
+- **Batch input**: Provide one or multiple video files/URLs.
+- **Timestamp control**: Choose the exact second to capture a frame (default: 10s). If the timestamp exceeds the video length, the Actor automatically uses the last second of the video.
+- **Output formats**: **PNG** or **JPG**.
+- **Quality presets**: Best (1), Good (5), Medium (15), Low (30).
+- **Binary outputs to KV store**: Images are saved to the default key‑value store.
+ 
+## Input
+Defined in `.actor/input_schema.json` and available in Apify Console.
 
-- **[Apify SDK](https://docs.apify.com/sdk/js/)** - a toolkit for building [Actors](https://apify.com/actors)
-- **[Crawlee](https://crawlee.dev/)** - web scraping and browser automation library
+- **videoFile** (array, required): Video file(s) or direct URL(s). You can upload files in Console or pass URLs.
+- **timestamp** (integer, optional, default: 10): Second in the video to capture.
+- **outputFormat** (string, optional, default: `png`): One of `png` or `jpg`.
+- **quality** (string, optional, default: `1`): One of `"1" | "5" | "15" | "30"`.
+
+## Output
+The Actor writes image binaries to the default key‑value store with keys:
+- `thumbnail-0`, `thumbnail-1`, ... (one per input video)
+
+Content types:
+- `image/png` for `png`
+- `image/jpeg` for `jpg`
+
+You can download the images from the Run’s Key‑Value Store in Apify Console or via API. In Console, open the run → Key‑Value Store → select `thumbnail-<index>` → Download.
+
 
 ## How it works
+1. For each input video, the Actor uses `ffprobe` to read the duration.
+2. It clamps the requested timestamp if it’s beyond the video length.
+3. It runs `ffmpeg` to extract a single frame and saves it.
+4. The resulting image is stored in the default key‑value store as `thumbnail-<index>`.
 
-Insert your own code between `await Actor.init()` and `await Actor.exit()`. If you would like to use the [Crawlee](https://crawlee.dev/) library simply uncomment its import `import { CheerioCrawler } from 'crawlee';`.
-
-## Resources
-
-- [TypeScript vs. JavaScript: which to use for web scraping?](https://blog.apify.com/typescript-vs-javascript-crawler/)
-- [Node.js tutorials](https://docs.apify.com/academy/node-js) in Academy
-- [Video guide on getting scraped data using Apify API](https://www.youtube.com/watch?v=ViYYDHSBAKM)
-- [Integration with Airbyte](https://apify.com/integrations), Make, Zapier, Google Drive, and other apps
-- A short guide on how to build web scrapers using code templates:
-
-[web scraper template](https://www.youtube.com/watch?v=u-i-Korzf8w)
-
-
-## Getting started
-
-For complete information [see this article](https://docs.apify.com/platform/actors/development#build-actor-locally). To run the Actor use the following command:
-
-```bash
-apify run
-```
-
-## Deploy to Apify
-
-### Connect Git repository to Apify
-
-If you've created a Git repository for the project, you can easily connect to Apify:
-
-1. Go to [Actor creation page](https://console.apify.com/actors/new)
-2. Click on **Link Git Repository** button
-
-### Push project on your local machine to Apify
-
-You can also deploy the project on your local machine to Apify without the need for the Git repository.
-
-1. Log in to Apify. You will need to provide your [Apify API Token](https://console.apify.com/account/integrations) to complete this action.
-
-    ```bash
-    apify login
-    ```
-
-2. Deploy your Actor. This command will deploy and build the Actor on the Apify Platform. You can find your newly created Actor under [Actors -> My Actors](https://console.apify.com/actors?tab=my).
-
-    ```bash
-    apify push
-    ```
-
-## Documentation reference
-
-To learn more about Apify and Actors, take a look at the following resources:
-
-- [Apify SDK for JavaScript documentation](https://docs.apify.com/sdk/js)
-- [Apify SDK for Python documentation](https://docs.apify.com/sdk/python)
-- [Apify Platform documentation](https://docs.apify.com/platform)
-- [Join our developer community on Discord](https://discord.com/invite/jyEM2PRvMU)
+## Notes & limits
+- One thumbnail per video per run (single timestamp). To create multiple timestamps, run multiple times.
+- Supported formats are those supported by ffmpeg (e.g., most common MP4/MOV/AVI/WebM).
