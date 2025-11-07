@@ -1,4 +1,4 @@
-### Thumbnail Generator
+# Thumbnail Generator
 
 Generate clean, high‑quality thumbnails from videos at a specific timestamp. Feed it one or many video files or URLs, pick the output format (PNG or JPG), set the quality, and the Actor will produce image thumbnails and store them in the default key‑value store.
 
