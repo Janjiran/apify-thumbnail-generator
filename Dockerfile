@@ -13,11 +13,6 @@ COPY --chown=myuser:myuser package*.json ./
 # Install all dependencies. Don't audit to speed up the installation.
 RUN npm install --include=dev --audit=false
 
-# Install ffmpeg
-RUN apk update
-RUN apk add
-RUN apk add ffmpeg
-
 # Next, copy the source files using the user set
 # in the base image.
 COPY --chown=myuser:myuser . ./

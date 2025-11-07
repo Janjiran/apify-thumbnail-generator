@@ -4,13 +4,15 @@ import fs from 'node:fs'
 import { Actor } from 'apify'
 
 import type { Input } from './types.js'
-import { getMimeType } from './utils.js'
+import { MIME_TYPE_BY_FORMAT } from './utils.js'
 
 const DEFAULT_TIMESTAMP = 10
 const DEFAULT_OUTPUT_FORMAT = 'png'
 const DEFAULT_QUALITY = '1'
 
 await Actor.init()
+
+const kv = await Actor.openKeyValueStore()
 
 const input = await Actor.getInput<Input>()
 
@@ -23,8 +25,7 @@ const outputFormat = input.outputFormat ?? DEFAULT_OUTPUT_FORMAT
 const quality = input.quality ?? DEFAULT_QUALITY
 const inputTimestamp = input.timestamp ?? DEFAULT_TIMESTAMP
 
-for (const [index, fileUrl] of files.entries()) {
-
+await Promise.all(files.map(async (fileUrl, index) => {
     try {
         const startTime = performance.now()
         const filename = `thumbnail-${index}.${outputFormat}`
@@ -46,13 +47,16 @@ for (const [index, fileUrl] of files.entries()) {
         execSync(`ffmpeg -hide_banner -loglevel error -y -ss ${timestamp} -i "${fileUrl}" -frames:v 1 -q:v ${quality} "${filename}"`, { encoding: 'utf-8' })
         const imageBuffer = fs.readFileSync(filename)
 
-        const mimeType = getMimeType(outputFormat)
+        const mimeType = MIME_TYPE_BY_FORMAT[outputFormat]
         await Actor.setValue(`thumbnail-${index}`, imageBuffer, { contentType: mimeType })
 
         const endTime = performance.now()
         console.log(`✅ Thumbnail created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`)
 
+        const thumbnailImage = kv.getPublicUrl(`thumbnail-${index}`)
+
         await Actor.pushData({
+            thumbnailImage,
             videoUrl: fileUrl,
             timestamp,
             outputFormat,
@@ -63,9 +67,7 @@ for (const [index, fileUrl] of files.entries()) {
     } catch (error) {
         console.error('❌ Failed to create thumbnail for', fileUrl)
         console.error(error)
-        continue
     }
-    
-}
+}))
 
 await Actor.exit()

@@ -1,0 +1,18 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Video Thumbnail Generator output",
+    "type": "object",
+    "properties": {
+        "thumbnails": {
+            "type": "string",
+            "title": "Thumbnails",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys"
+        },
+        "results": {
+            "type": "string",
+            "title": "Results",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}
+

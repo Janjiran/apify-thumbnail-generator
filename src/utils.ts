@@ -1,8 +1,4 @@
-export function getMimeType(format: 'jpg' | 'png'): string {
-    const mimeMap: Record<string, string> = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-    };
-    return mimeMap[format] ?? format;
-  }
+export const MIME_TYPE_BY_FORMAT: Record<'jpg' | 'png', string> = {
+    jpg: 'image/jpeg',
+    png: 'image/png',
+}
