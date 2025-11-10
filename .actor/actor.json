@@ -1,18 +1,18 @@
 {
-	"actorSpecification": 1,
-	"name": "video-thumbnail-generator",
-	"title": "Video Thumbnail Generator",
-	"description": "🎬 Generate thumbnails from videos at a chosen timestamp. Provide one or many video files or URLs, pick PNG or JPG and quality, and the Actor saves images to the default key-value store.",
-	"version": "1.0",
-	"buildTag": "latest",
-	"meta": {
-		"templateId": "ts-empty"
-	},
-	"inputSchema": "./input_schema.json",
-	"output": "./output_schema.json",
-	"storages": {
+    "actorSpecification": 1,
+    "name": "video-thumbnail-generator",
+    "title": "Video Thumbnail Generator",
+    "description": "🎬 Generate thumbnails from videos at a chosen timestamp. Provide one or many video files or URLs, pick PNG or JPG and quality, and the Actor saves images to the default key-value store.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "meta": {
+        "templateId": "ts-empty"
+    },
+    "inputSchema": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
         "dataset": "./dataset_schema.json"
     },
-	"dockerfile": "../Dockerfile",
-	"readme": "../README.md"
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md"
 }

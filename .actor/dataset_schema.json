@@ -5,15 +5,7 @@
         "overview": {
             "title": "Thumbnails generated",
             "transformation": {
-                "fields": [
-                    "thumbnailImage",
-                    "videoUrl",
-                    "timestamp",
-                    "outputFormat",
-                    "quality",
-                    "filename",
-                    "mimeType"
-                ]
+                "fields": ["thumbnailImage", "videoUrl", "timestamp", "outputFormat", "quality", "filename", "mimeType"]
             },
             "display": {
                 "component": "table",

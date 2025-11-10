@@ -4,41 +4,38 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-      "videoFile": {
-        "title": "Video files or URLs",
-        "type": "array",
-        "description": "Upload a video file or URL to process (stored in default key-value store). Supported formats can be found here: https://ffmpeg.org/general.html#File-Formats",
-        "editor": "fileupload"
-      },
-      "timestamp": {
-        "title": "Timestamp",
-        "type": "integer",
-        "description": "Timestamp in seconds where to take the thumbnail from video",
-        "default": 10,
-        "editor": "number",
-        "unit": "seconds"
-      },
-      "outputFormat": {
-        "title": "Output format",
-        "type": "string",
-        "description": "Select the output format. Supported formats can be found here: https://ffmpeg.org/general.html#File-Formats",
-        "editor": "select",
-        "default": "png",
-        "enum": ["png", "jpg"],
-        "enumTitles": ["PNG", "JPG"]
-      },
-      "quality": {
-        "title": "Image quality",
-        "type": "string",
-        "description": "Select the quality of the output image. The values refer to ffmpeg's quality parameter ranging from 1 to 31.",
-        "editor": "select",
-        "default": "1",
-        "enum": ["1", "5", "15", "31"],
-        "enumTitles": ["Best", "Good", "Medium", "Low"]
-        
-      }
+        "videoFile": {
+            "title": "Video files or URLs",
+            "type": "array",
+            "description": "Upload a video file or URL to process (stored in default key-value store). Supported formats can be found here: https://ffmpeg.org/general.html#File-Formats",
+            "editor": "fileupload"
+        },
+        "timestamp": {
+            "title": "Timestamp",
+            "type": "integer",
+            "description": "Timestamp in seconds where to take the thumbnail from video",
+            "default": 10,
+            "editor": "number",
+            "unit": "seconds"
+        },
+        "outputFormat": {
+            "title": "Output format",
+            "type": "string",
+            "description": "Select the output format. Supported formats can be found here: https://ffmpeg.org/general.html#File-Formats",
+            "editor": "select",
+            "default": "png",
+            "enum": ["png", "jpg"],
+            "enumTitles": ["PNG", "JPG"]
+        },
+        "quality": {
+            "title": "Image quality",
+            "type": "string",
+            "description": "Select the quality of the output image. The values refer to ffmpeg's quality parameter ranging from 1 to 31.",
+            "editor": "select",
+            "default": "1",
+            "enum": ["1", "5", "15", "31"],
+            "enumTitles": ["Best", "Good", "Medium", "Low"]
+        }
     },
-    "required": [
-      "videoFile"
-    ]
-  }
+    "required": ["videoFile"]
+}

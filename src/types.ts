@@ -1,6 +1,10 @@
+export type OutputFormat = 'jpg' | 'png';
+
+export type Quality = '1' | '5' | '15' | '30';
+
 export type Input = {
-    videoFile: string | string[]
+    videoFile: string | string[];
     timestamp?: number;
-    outputFormat?: 'jpg' | 'png';
-    quality?: '1' | '5' | '15' | '30';
-}
+    outputFormat?: OutputFormat;
+    quality?: Quality;
+};
