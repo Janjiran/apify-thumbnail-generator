@@ -28,9 +28,6 @@ const inputTimestamp = input.timestamp ?? DEFAULT_TIMESTAMP
 await Promise.all(files.map(async (fileUrl, index) => {
     try {
         const startTime = performance.now()
-        const filename = `thumbnail-${index}.${outputFormat}`
-
-        console.log(`⚡️ Creating thumbnail for ${fileUrl} with name: ${filename}`)
 
         const durationOutput = execSync(`ffprobe -i "${fileUrl}" -show_entries format=duration -v error -of csv="p=0"`, { encoding: 'utf-8' })
 
@@ -43,17 +40,23 @@ await Promise.all(files.map(async (fileUrl, index) => {
             console.warn(`⚠️ Video duration is less than timestamp. Video duration: ${videoLengthSeconds.toFixed(2)}s, timestamp: ${timestamp}s.\nUsing the last second of the video`)
             timestamp = videoLengthSeconds - 1
         }
+
+
+        const filename = `thumbnail-${index}-${timestamp}`
+        const filenameWithExt = `${filename}.${outputFormat}`
+
+        console.log(`⚡️ Creating thumbnail for ${fileUrl} with name: ${filenameWithExt}`)
         
-        execSync(`ffmpeg -hide_banner -loglevel error -y -ss ${timestamp} -i "${fileUrl}" -frames:v 1 -q:v ${quality} "${filename}"`, { encoding: 'utf-8' })
-        const imageBuffer = fs.readFileSync(filename)
+        execSync(`ffmpeg -hide_banner -loglevel error -y -ss ${timestamp} -i "${fileUrl}" -frames:v 1 -q:v ${quality} "${filenameWithExt}"`, { encoding: 'utf-8' })
+        const imageBuffer = fs.readFileSync(filenameWithExt)
 
         const mimeType = MIME_TYPE_BY_FORMAT[outputFormat]
-        await Actor.setValue(`thumbnail-${index}`, imageBuffer, { contentType: mimeType })
+        await Actor.setValue(filename, imageBuffer, { contentType: mimeType })
 
         const endTime = performance.now()
         console.log(`✅ Thumbnail created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`)
 
-        const thumbnailImage = kv.getPublicUrl(`thumbnail-${index}`)
+        const thumbnailImage = kv.getPublicUrl(filename)
 
         await Actor.pushData({
             thumbnailImage,
