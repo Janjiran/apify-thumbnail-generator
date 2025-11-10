@@ -3,12 +3,8 @@ import fs from 'node:fs'
 
 import { Actor } from 'apify'
 
+import { DEFAULT_OUTPUT_FORMAT, DEFAULT_QUALITY, DEFAULT_TIMESTAMP, MIME_TYPE_BY_FORMAT } from './consts.js'
 import type { Input } from './types.js'
-import { MIME_TYPE_BY_FORMAT } from './utils.js'
-
-const DEFAULT_TIMESTAMP = 10
-const DEFAULT_OUTPUT_FORMAT = 'png'
-const DEFAULT_QUALITY = '1'
 
 await Actor.init()
 
