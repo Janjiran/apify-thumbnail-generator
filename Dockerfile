@@ -44,6 +44,11 @@ RUN npm --quiet set progress=false \
     && npm --version \
     && rm -r ~/.npm
 
+# Install ffmpeg
+RUN apk update
+RUN apk add
+RUN apk add ffmpeg
+
 # Copy built JS files from builder image
 COPY --from=builder --chown=myuser:myuser /usr/src/app/dist ./dist
 

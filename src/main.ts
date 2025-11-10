@@ -1,20 +1,49 @@
-// Apify SDK - toolkit for building Apify Actors (Read more at https://docs.apify.com/sdk/js/)
+
 import { Actor } from 'apify';
-// Crawlee - web scraping and browser automation library (Read more at https://crawlee.dev)
-// import { CheerioCrawler } from 'crawlee';
 
-// this is ESM project, and as such, it requires you to specify extensions in your relative imports
-// read more about this here: https://nodejs.org/docs/latest-v18.x/api/esm.html#mandatory-file-extensions
-// note that we need to use `.js` even when inside TS files
-// import { router } from './routes.js';
+import { normalizeInputs } from './lib/input.js';
+import { saveData } from './lib/output.js';
+import { timestampGuard } from './lib/utils.js';
+import { generateThumbnail, getVideoDuration } from './lib/video.js';
+import type { Input } from './types.js';
 
-// The init() call configures the Actor for its environment. It's recommended to start every Actor with an init()
 await Actor.init();
 
-console.log('Hello from the Actor!');
-/**
- * Actor code
- */
+const inputs = await Actor.getInput<Input>();
 
-// Gracefully exit the Actor process. It's recommended to quit all Actors with an exit()
+if (!inputs || !inputs.thumbnails.length) {
+    throw new Error('No input provided');
+}
+
+const normalizedInputs = normalizeInputs(inputs);
+
+await Promise.all(
+    normalizedInputs.map(async (input, index) => {
+        const { fileUrl, outputFormat, quality, timestamp: inputTimestamp } = input;
+
+        try {
+            const startTime = performance.now();
+
+            const videoLengthSeconds = getVideoDuration(fileUrl);
+
+            const timestamp = timestampGuard(inputTimestamp, videoLengthSeconds);
+
+            const filename = `thumbnail-${index}-${timestamp}`;
+            const filenameWithExt = `${filename}.${outputFormat}`;
+
+            console.log(`⚡️ Creating thumbnail for ${fileUrl} with name: ${filenameWithExt}`);
+
+            const imageBuffer = generateThumbnail(fileUrl, timestamp, quality, filenameWithExt);
+
+            const endTime = performance.now();
+            console.log(`✅ Thumbnail created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`);
+
+            await saveData(filenameWithExt, fileUrl, timestamp, outputFormat, quality, filenameWithExt, imageBuffer);
+        } catch (error) {
+            console.error('❌ Failed to create thumbnail for', fileUrl);
+            console.error(error);
+        }
+    }),
+);
+
 await Actor.exit();

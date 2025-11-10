@@ -1,0 +1,45 @@
+{
+    "actorSpecification": 1,
+    "fields": {},
+    "views": {
+        "overview": {
+            "title": "Thumbnails generated",
+            "transformation": {
+                "fields": ["thumbnailImage", "videoUrl", "timestamp", "outputFormat", "quality", "filename", "mimeType"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "thumbnailPreview": {
+                        "label": "Thumbnail Image",
+                        "format": "image"
+                    },
+                    "videoUrl": {
+                        "label": "Video URL",
+                        "format": "link"
+                    },
+                    "timestamp": {
+                        "label": "Timestamp",
+                        "format": "number"
+                    },
+                    "outputFormat": {
+                        "label": "Output Format",
+                        "format": "text"
+                    },
+                    "quality": {
+                        "label": "Quality (1-31)",
+                        "format": "number"
+                    },
+                    "filename": {
+                        "label": "Filename",
+                        "format": "text"
+                    },
+                    "mimeType": {
+                        "label": "MIME Type",
+                        "format": "text"
+                    }
+                }
+            }
+        }
+    }
+}
