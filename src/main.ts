@@ -1,7 +1,7 @@
 
 import { Actor } from 'apify';
 
-import { normalizeInput } from './lib/input.js';
+import { normalizeInputs } from './lib/input.js';
 import { saveData } from './lib/output.js';
 import { timestampGuard } from './lib/utils.js';
 import { generateThumbnail, getVideoDuration } from './lib/video.js';
@@ -9,17 +9,18 @@ import type { Input } from './types.js';
 
 await Actor.init();
 
+const inputs = await Actor.getInput<Input>();
 
-const input = await Actor.getInput<Input>();
-
-if (!input) {
+if (!inputs || !inputs.thumbnails.length) {
     throw new Error('No input provided');
 }
 
-const { files, outputFormat, quality, timestamp: inputTimestamp } = normalizeInput(input);
+const normalizedInputs = normalizeInputs(inputs);
 
 await Promise.all(
-    files.map(async (fileUrl, index) => {
+    normalizedInputs.map(async (input, index) => {
+        const { fileUrl, outputFormat, quality, timestamp: inputTimestamp } = input;
+
         try {
             const startTime = performance.now();
 
