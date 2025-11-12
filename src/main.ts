@@ -1,10 +1,9 @@
-
 import { Actor } from 'apify';
 
 import { normalizeInputs } from './lib/input.js';
 import { saveData } from './lib/output.js';
 import { timestampGuard } from './lib/utils.js';
-import { generateThumbnail, getVideoDuration } from './lib/video.js';
+import { generateThumbnails, getVideoDuration } from './lib/video.js';
 import type { Input } from './types.js';
 
 await Actor.init();
@@ -19,26 +18,34 @@ const normalizedInputs = normalizeInputs(inputs);
 
 await Promise.all(
     normalizedInputs.map(async (input, index) => {
-        const { fileUrl, outputFormat, quality, timestamp: inputTimestamp } = input;
+        const { fileUrl, outputFormat, quality, timestamps: inputTimestamps } = input;
 
         try {
             const startTime = performance.now();
 
-            const videoLengthSeconds = getVideoDuration(fileUrl);
+            const videoLengthSeconds = await getVideoDuration(fileUrl);
+            const timestamps = timestampGuard(inputTimestamps, videoLengthSeconds);
 
-            const timestamp = timestampGuard(inputTimestamp, videoLengthSeconds);
+            console.log(`⚡️ Creating thumbnails for ${fileUrl}`);
 
-            const filename = `thumbnail-${index}-${timestamp}`;
-            const filenameWithExt = `${filename}.${outputFormat}`;
-
-            console.log(`⚡️ Creating thumbnail for ${fileUrl} with name: ${filenameWithExt}`);
-
-            const imageBuffer = generateThumbnail(fileUrl, timestamp, quality, filenameWithExt);
+            const thumbnails = await generateThumbnails(fileUrl, timestamps, quality, index, outputFormat);
 
             const endTime = performance.now();
-            console.log(`✅ Thumbnail created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`);
+            console.log(`✅ Thumbnails created successfully and took: ${(endTime - startTime).toFixed(2)}ms.`);
 
-            await saveData(filenameWithExt, fileUrl, timestamp, outputFormat, quality, filenameWithExt, imageBuffer);
+            for (const [i, thumbnail] of thumbnails.entries()) {
+                console.log('Uploading thumbnail for fileUrl: ', fileUrl, ' | progress: ', i + 1, 'of', thumbnails.length);
+                // await saveData(filenameWithExt, fileUrl, timestamp, outputFormat, quality, filenameWithExt, imageBuffer);
+                await saveData(
+                    thumbnail.filenameWithExt,
+                    fileUrl,
+                    thumbnail.timestamp,
+                    outputFormat,
+                    quality,
+                    thumbnail.filenameWithExt,
+                    thumbnail.image,
+                );
+            }
         } catch (error) {
             console.error('❌ Failed to create thumbnail for', fileUrl);
             console.error(error);
