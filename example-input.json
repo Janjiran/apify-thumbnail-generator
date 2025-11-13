@@ -4,7 +4,7 @@
             "outputFormat": "png",
             "quality": "1",
             "timestamps": [5, 10],
-            "videoFile": "https://api.apify.com/v2/key-value-stores/DlsAhIrpKvm33gjpA/records/Zaznamobrazovky2025-11-11v16.22.41.mov"
+            "videoFile": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
         },
         {
             "outputFormat": "jpg",
