@@ -35,7 +35,6 @@ await Promise.all(
 
             for (const [i, thumbnail] of thumbnails.entries()) {
                 console.log('Uploading thumbnail for fileUrl: ', fileUrl, ' | progress: ', i + 1, 'of', thumbnails.length);
-                // await saveData(filenameWithExt, fileUrl, timestamp, outputFormat, quality, filenameWithExt, imageBuffer);
                 await saveData(
                     thumbnail.filenameWithExt,
                     fileUrl,
