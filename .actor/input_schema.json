@@ -18,13 +18,11 @@
                         "description": "Upload a video file or URL to process (stored in default key-value store). Supported formats can be found here: https://ffmpeg.org/general.html#File-Formats",
                         "editor": "fileupload"
                     },
-                    "timestamp": {
-                        "title": "Timestamp",
-                        "type": "integer",
-                        "description": "Timestamp in seconds where to take the thumbnail from video",
-                        "default": 10,
-                        "editor": "number",
-                        "unit": "seconds"
+                    "timestamps": {
+                        "title": "Timestamps",
+                        "type": "array",
+                        "description": "Timestamps in seconds where to take the thumbnails from video",
+                        "editor": "stringList"
                     },
                     "outputFormat": {
                         "title": "Output format",

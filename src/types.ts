@@ -4,7 +4,7 @@ export type Quality = '1' | '5' | '15' | '30';
 
 export type ThumbnailInput = {
     videoFile: string;
-    timestamp?: number;
+    timestamps?: number[];
     outputFormat?: OutputFormat;
     quality?: Quality;
 }
@@ -12,3 +12,11 @@ export type ThumbnailInput = {
 export type Input = {
     thumbnails: ThumbnailInput[];
 };
+
+
+export type ThumbnailGeneratorOutput = {
+    image: Buffer;
+    filename: string;
+    filenameWithExt: string;
+    timestamp: number;
+}
