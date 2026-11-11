@@ -1,0 +1,16 @@
+{
+    "thumbnails": [
+        {
+            "outputFormat": "png",
+            "quality": "1",
+            "timestamps": [5, 10],
+            "videoFile": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        },
+        {
+            "outputFormat": "jpg",
+            "quality": "15",
+            "timestamps": [10, 20],
+            "videoFile": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        }
+    ]
+}

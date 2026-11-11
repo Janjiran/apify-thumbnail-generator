@@ -7,13 +7,13 @@ export function normalizeInputs(inputs: Input) {
 
         const outputFormat = input.outputFormat ?? DEFAULT_OUTPUT_FORMAT;
         const quality = input.quality ?? DEFAULT_QUALITY;
-        const timestamp = input.timestamp ?? DEFAULT_TIMESTAMP;
+        const timestamps = input.timestamps ?? [DEFAULT_TIMESTAMP];
 
         return {
             fileUrl: input.videoFile,
             outputFormat,
             quality,
-            timestamp,
+            timestamps,
         }
     })
 }
